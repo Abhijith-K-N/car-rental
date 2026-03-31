@@ -19,7 +19,7 @@ export default function CarDetailPage() {
       const { data, error } = await supabase
         .from('cars')
         .select('*')
-        .eq('id', id) // use Number(id) if your id is integer
+        .eq('id', id)
         .single()
 
       if (error) {
@@ -40,8 +40,8 @@ export default function CarDetailPage() {
     router.push(`/booking/${id}`)
   }
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
-  if (!car) return <div className="text-center py-20 text-gray-500">Car not found.</div>
+  if (loading) return <div className="text-center py-20 text-gray-400">Loading...</div>
+  if (!car) return <div className="text-center py-20 text-gray-400">Car not found.</div>
 
   const specs = [
     { label: 'Brand', value: car.brand },
@@ -52,63 +52,94 @@ export default function CarDetailPage() {
   ]
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <Link href="/cars" className="text-blue-600 text-sm hover:underline mb-4 block">
-        ← Back to Cars
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0B1C2C] to-[#020617] text-white">
+      <div className="max-w-5xl mx-auto px-4 py-10">
 
-      <img
-        src={car.image_url || 'https://via.placeholder.com/800x400?text=Car+Image'}
-        alt={car.name}
-        className="w-full h-80 object-cover rounded-2xl mb-8"
-      />
+        <Link href="/cars" className="text-blue-400 text-sm hover:underline mb-6 inline-block">
+          ← Back to Cars
+        </Link>
 
-      <div className="grid md:grid-cols-2 gap-10">
-        {/* Left: Details */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-1">{car.name}</h1>
-          <p className="text-gray-500 mb-6">
-            {car.brand} · {car.type}
-          </p>
+        {/* IMAGE */}
+        <div className="relative rounded-3xl overflow-hidden mb-10">
+          <img
+            src={car.image_url || 'https://via.placeholder.com/800x400?text=Car+Image'}
+            alt={car.name}
+            className="w-full h-80 object-cover"
+          />
 
-          <div className="grid grid-cols-2 gap-4">
-            {specs.map((s) => (
-              <div key={s.label} className="bg-gray-50 rounded-xl p-4">
-                <p className="text-xs text-gray-400 mb-1">{s.label}</p>
-                <p className="font-semibold text-gray-700">{s.value}</p>
-              </div>
-            ))}
+          {/* DARK OVERLAY FOR READABILITY */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+
+          {/* TITLE OVER IMAGE */}
+          <div className="absolute bottom-6 left-6 right-6">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">
+              {car.name}
+            </h1>
+            <p className="text-gray-300">
+              {car.brand} · {car.type}
+            </p>
           </div>
         </div>
 
-        {/* Right: Booking Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 h-fit">
-          <p className="text-3xl font-bold text-blue-600 mb-1">
-            ₹{car.price_per_day}
-            <span className="text-gray-400 text-base font-normal">/day</span>
-          </p>
+        <div className="grid md:grid-cols-2 gap-10">
 
-          <p className="text-gray-500 text-sm mb-6">
-            Total depends on rental duration
-          </p>
+          {/* LEFT: DETAILS */}
+          <div className="space-y-6">
 
-          <button
-            onClick={handleBook}
-            disabled={!car.available}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition ${
-              car.available
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'bg-gray-300 cursor-not-allowed'
-            }`}
-          >
-            {car.available ? '🚗 Book Now' : 'Not Available'}
-          </button>
+            <div className="grid grid-cols-2 gap-4">
+              {specs.map((s) => (
+                <div key={s.label}
+                  className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-4">
+                  <p className="text-sm text-gray-400 mb-1">{s.label}</p>
+                  <p className="font-semibold text-white">{s.value}</p>
+                </div>
+              ))}
+            </div>
 
-          {!user && (
-            <p className="text-center text-gray-400 text-xs mt-3">
-              You&apos;ll be prompted to login
-            </p>
-          )}
+          </div>
+
+          {/* RIGHT: BOOKING CARD */}
+          <div className="relative p-[1px] rounded-3xl 
+          bg-gradient-to-r from-purple-500/40 via-blue-500/40 to-indigo-500/40">
+
+            <div className="rounded-3xl p-6 h-fit
+            bg-gradient-to-br from-[#0B1C2C] to-[#020617]
+            border border-white/10 backdrop-blur-xl">
+
+              {/* PRICE */}
+              <p className="text-3xl font-bold text-white mb-1">
+                <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+                  ₹{car.price_per_day}
+                </span>
+                <span className="text-gray-300 text-base font-normal ml-1">/day</span>
+              </p>
+
+              <p className="text-gray-400 text-sm mb-6">
+                Total depends on rental duration
+              </p>
+
+              {/* BUTTON */}
+              <button
+                onClick={handleBook}
+                disabled={!car.available}
+                className={`w-full py-3 rounded-xl font-semibold transition-all duration-300
+                ${
+                  car.available
+                    ? 'bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:scale-[1.02]'
+                    : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                {car.available ? '🚗 Book Now' : 'Not Available'}
+              </button>
+
+              {!user && (
+                <p className="text-center text-gray-400 text-xs mt-3">
+                  You&apos;ll be prompted to login
+                </p>
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
